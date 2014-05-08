@@ -246,6 +246,17 @@
         refresh();
     }
 
+    var debounce = function (fn, delay) {
+      var timer = null;
+      return function () {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+
     var refresh = function () {
 
         var i, ei, j, k, elements, element, val;
@@ -352,15 +363,28 @@
         return data;
     };
 
-    if (window.addEventListener) {
-        window.addEventListener("resize", refresh, false);
-        window.addEventListener("DOMContentLoaded", init, false);
-        window.addEventListener("load", init, false);
-    }
-    else if (window.attachEvent) {
-        window.attachEvent("onresize", refresh);
-        window.attachEvent("onload", init);
-    }
+    window.elementQuery.start = function (options) {
+      if (window.addEventListener) {
+          window.addEventListener("resize", debounce(function(){
+            refresh();
+          }, options.debounceTime), false);
+          window.addEventListener("DOMContentLoaded", init, false);
+          window.addEventListener("load", init, false);
+      }
+      if ( options.addEvents ) {
+        if (window.attachEvent) {
+            window.attachEvent("onload", init);
+        }
+      } else {
+        if (window.attachEvent) {
+            window.attachEvent("onresize", debounce(function(){
+              refresh();
+            }, options.debounceTime));
+            window.attachEvent("onload", init);
+        }
+      }
+    };
+
 }(this, document, undefined));
 
 /*! getEmPixels  | Author: Tyson Matanich (http://matanich.com), 2013 | License: MIT */

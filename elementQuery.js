@@ -371,7 +371,7 @@
           window.addEventListener("DOMContentLoaded", init, false);
           window.addEventListener("load", init, false);
       }
-      if ( options.addEvents ) {
+      if ( options.resizeIE8 ) {
         if (window.attachEvent) {
             window.attachEvent("onload", init);
         }

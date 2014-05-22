@@ -1,4 +1,6 @@
 /*! elementQuery | Author: Tyson Matanich (http://matanich.com), 2013 | License: MIT */
+
+/* Modified by Sparkbox, 2014 */
 (function (window, document, undefined) {
     // Enable strict mode
     "use strict";
@@ -108,7 +110,7 @@
                                 // Append second half of the selector
                                 tail = selectors[i].substring(result.index + result[1].length);
                                 if (tail.length > 0) {
-                                    
+
                                     t = tail.indexOf(" ");
                                     if (t != 0) {
                                         if (t > 0) {
@@ -144,7 +146,7 @@
     };
 
     var processStyleSheet = function (styleSheet, force) {
-        
+
         if (cssRules == null) {
             setCssRules();
         }
@@ -205,7 +207,7 @@
             var val = trim(value);
             if (val != "") {
                 var cur = clean(element, attr);
-                
+
                 if (cur.indexOf(" " + val + " ") < 0) {
                     // Add the value if its not already there
                     element.setAttribute(attr, trim(cur + val));
@@ -259,19 +261,22 @@
 
     var refresh = function () {
 
-        var i, ei, j, k, elements, element, val;
+        var i, ei, j, k, elements, element, val, oWidth, oHeight, c, context, contextElements;
 
         // For each selector
         for (i in queryData) {
 
             // Get the items matching the selector
-            elements = sizzle(i);
+            elements = sizzle(i + ":not([data-eq-use])");
 
             if (elements.length > 0) {
 
                 // For each matching element
                 for (ei = 0; ei < elements.length; ei++) {
                     element = elements[ei];
+
+                    oWidth = element.offsetWidth;
+                    oHeight = element.offsetHeight;
 
                     // For each min|max-width|height string
                     for (j in queryData[i]) {
@@ -289,16 +294,32 @@
                             /* NOTE: Using offsetWidth/Height so an element can be adjusted when it reaches a specific size.
                             /* For Nested queries scrollWidth/Height or clientWidth/Height may sometime be desired but are not supported. */
 
-                            if ((j == "min-width" && element.offsetWidth >= val) ||
-                                (j == "max-width" && element.offsetWidth <= val) ||
-                                (j == "min-height" && element.offsetHeight >= val) ||
-                                (j == "max-height" && element.offsetHeight <= val)) {
+                            var context = element.getAttribute('data-eq-save');
+
+                            if ((j == "min-width" && oWidth >= val) ||
+                                (j == "max-width" && oWidth <= val) ||
+                                (j == "min-height" && oHeight >= val) ||
+                                (j == "max-height" && oHeight <= val)) {
                                 // Add matching attr value
                                 addTo(element, j, k);
+
+                                if(context) {
+                                  contextElements = sizzle("[data-eq-use=" + context + "]");
+                                  for(c in contextElements) {
+                                    addTo(contextElements[c], j, k);
+                                  }
+                                }
                             }
                             else {
                                 // Remove non-matching attr value
                                 removeFrom(element, j, k);
+
+                                if(context) {
+                                  contextElements = sizzle("[data-eq-use=" + context + "]");
+                                  for(c in contextElements) {
+                                    removeFrom(contextElements[c], j, k);
+                                  }
+                                }
                             }
                         }
                     }

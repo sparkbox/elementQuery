@@ -389,21 +389,17 @@
           window.addEventListener("resize", debounce(function(){
             refresh();
           }, options.debounceTime), false);
-          window.addEventListener("DOMContentLoaded", init, false);
-          window.addEventListener("load", init, false);
       }
       if ( options.resizeIE8 ) {
-        if (window.attachEvent) {
-            window.attachEvent("onload", init);
-        }
       } else {
         if (window.attachEvent) {
             window.attachEvent("onresize", debounce(function(){
               refresh();
             }, options.debounceTime));
-            window.attachEvent("onload", init);
         }
       }
+
+      init();
     };
 
 }(this, document, undefined));

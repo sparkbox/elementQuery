@@ -237,12 +237,16 @@
         }
     };
 
-    var init = function () {
+    var init = function (options) {
 
         // Process the style sheets
         var i;
+        var domainStyleRegex = options.stylesheetRegexExclusion ? new RegExp(options.stylesheetRegexExclusion) : new RegExp('.*');
+
         for (i = 0; i < document.styleSheets.length; i++) {
+          if (domainStyleRegex.test(document.styleSheets[i].href)){
             processStyleSheet(document.styleSheets[i]);
+          }
         }
 
         refresh();

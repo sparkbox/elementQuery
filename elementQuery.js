@@ -403,7 +403,7 @@
         }
       }
 
-      init();
+      init(options);
     };
 
 }(this, document, undefined));

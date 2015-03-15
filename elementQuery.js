@@ -389,21 +389,23 @@
     };
 
     window.elementQuery.start = function (options) {
-      if (window.addEventListener) {
-          window.addEventListener("resize", debounce(function(){
-            refresh();
-          }, options.debounceTime), false);
-      }
-      if ( options.resizeIE8 ) {
-      } else {
-        if (window.attachEvent) {
-            window.attachEvent("onresize", debounce(function(){
+      $(document).ready(function() {
+        if (window.addEventListener) {
+            window.addEventListener("resize", debounce(function(){
               refresh();
-            }, options.debounceTime));
+            }, options.debounceTime), false);
         }
-      }
+        if ( options.resizeIE8 ) {
+        } else {
+          if (window.attachEvent) {
+              window.attachEvent("onresize", debounce(function(){
+                refresh();
+              }, options.debounceTime));
+          }
+        }
 
-      init(options);
+        init(options);
+      });
     };
 
 }(this, document, undefined));

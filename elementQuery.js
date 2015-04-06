@@ -16,9 +16,15 @@
     var cssRules = null;
 
     var setCssRules = function () {
-        if (document.styleSheets[0]) {
-            cssRules = (document.styleSheets[0].cssRules !== undefined) ? "cssRules" : "rules";
+      var i;
+      var domainStyleRegex = window.elementQuery.options.stylesheetRegexExclusion ? new RegExp(window.elementQuery.options.stylesheetRegexExclusion) : new RegExp('.*');
+
+      for (i = 0; i < document.styleSheets.length; i++) {
+        if (domainStyleRegex.test(document.styleSheets[i].href)) {
+          cssRules = (document.styleSheets[i].cssRules !== undefined) ? "cssRules" : "rules";
+          break;
         }
+      }
     }
 
     var addQueryDataValue = function (selector, type, pair, number, value) {
@@ -241,7 +247,7 @@
 
         // Process the style sheets
         var i;
-        var domainStyleRegex = options.stylesheetRegexExclusion ? new RegExp(options.stylesheetRegexExclusion) : new RegExp('.*');
+        var domainStyleRegex = window.elementQuery.options.stylesheetRegexExclusion ? new RegExp(window.elementQuery.options.stylesheetRegexExclusion) : new RegExp('.*');
 
         for (i = 0; i < document.styleSheets.length; i++) {
           if (domainStyleRegex.test(document.styleSheets[i].href)){
@@ -389,6 +395,7 @@
     };
 
     window.elementQuery.start = function (options) {
+      window.elementQuery.options = options;
       $(document).ready(function() {
         if (window.addEventListener) {
             window.addEventListener("resize", debounce(function(){
@@ -404,7 +411,7 @@
           }
         }
 
-        init(options);
+        init();
       });
     };
 
